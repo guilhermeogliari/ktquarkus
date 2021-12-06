@@ -1,6 +1,7 @@
 package br.com.ktquarkus.client;
 
 import br.com.ktquarkus.domain.ResponseFilms;
+import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.GET;
@@ -14,6 +15,6 @@ public interface FilmsClient {
     @GET
     @Path("/api/films")
     @Produces(MediaType.APPLICATION_JSON)
-    ResponseFilms getFilms();
+    Uni<ResponseFilms> getFilms();
 
 }

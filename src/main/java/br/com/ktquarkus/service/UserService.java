@@ -4,13 +4,14 @@ import br.com.ktquarkus.client.FilmsClient;
 import br.com.ktquarkus.domain.ResponseFilms;
 import br.com.ktquarkus.domain.User;
 import br.com.ktquarkus.repository.UserRepository;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @ApplicationScoped
 public class UserService {
@@ -22,30 +23,36 @@ public class UserService {
     @Inject
     UserRepository userRepository;
 
-    public List<User> getAllUser() {
-        return userRepository.findAll().list();
+    public Multi<User> getAllUser() {
+        return userRepository.streamAll();
     }
 
-    public User getUser(String id){
-        return userRepository.findById(new ObjectId(id));
+    public Uni<User> getUser(String id){
+        return userRepository.findById(new ObjectId(id))
+                .map(this::transformName);
     }
 
-    public Response persistUser(User user){
-        userRepository.persist(user);
-        return Response.accepted().build();
+    private User transformName(User user){
+        user.setName("REATIVO FUNCIONAL");
+        return user;
     }
 
-    public Response updateUser(User user){
-        userRepository.update(user);
-        return Response.ok().build();
+    public Uni<Response> persistUser(User user){
+        return userRepository.persist(user)
+                .map(user1 -> Response.ok().build());
     }
 
-    public Response deleteUser(String id){
-        userRepository.deleteById(new ObjectId(id));
-        return Response.ok().build();
+    public Uni<Response> updateUser(User user){
+        return userRepository.update(user)
+                .map(user1 -> Response.ok().build());
     }
 
-    public ResponseFilms getFilms() {
+    public Uni<Response> deleteUser(String id){
+        return userRepository.deleteById(new ObjectId(id))
+                .map(aBoolean -> Response.ok().build());
+    }
+
+    public Uni<ResponseFilms> getFilms() {
         return filmsClient.getFilms();
     }
 

@@ -11,3 +11,8 @@ https://swapi.dev/api/films
 
 https://swapi.dev/api/people/1/
 
+# Links úteis
+
+https://quarkus.io/guides/
+
+https://smallrye.io/smallrye-mutiny/
